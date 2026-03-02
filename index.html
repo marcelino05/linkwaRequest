@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Postman - Sr MG</title>
+  
+  <style>
+    :root {
+      --primary: #0C9A3E;
+      --background: #FFFFFF;
+      --card: #ABABAB;
+      --border: #e2e8f0;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--background);
+      padding: 15px;
+    }
+    
+    /* MOBILE FIRST */
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .card {
+      background: var(--card);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    h2 {
+      margin-top: 0;
+      color: var(--primary);
+    }
+    
+    input,
+    select,
+    textarea,
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      outline: 1px solid #0C9A3E;
+      font-size: 14px;
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      outline: 1px solid #0C9A3E;
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    button:hover {
+      opacity: 0.9;
+    }
+    
+    pre {
+      background: #0f172a;
+      color: #fff;
+      font-size: 1.2em;
+      font-weight: 500;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-y: auto;
+      /* scroll vertical */
+      max-height: 400px;
+      /* limite de altura */
+      white-space: pre-wrap;
+      /* quebra linha automática */
+      word-wrap: break-word;
+      /* evita estouro de palavras grandes */
+    }
+    
+    
+    /* TABLET VERSION */
+    @media (min-width: 768px) {
+      .container {
+        flex-direction: row;
+      }
+      
+      .card {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  
+  <div class="container">
+    
+    <div class="card">
+      <h2>📡 Requisição</h2>
+      
+      <label>Método</label>
+      <select id="method">
+        <option value="GET">GET</option>
+        <option value="POST">POST</option>
+        <option value="PUT">PUT</option>
+        <option value="DELETE">DELETE</option>
+      </select>
+      
+      <label>URL</label>
+      <input type="text" id="url" placeholder="http://192.168.0.15:3000/api">
+      
+      <label>Body (JSON)</label>
+      <textarea id="body" placeholder='{"name":"Sr MG"}'></textarea>
+      
+      <button onclick="sendRequest()">Enviar Requisição</button>
+    </div>
+    
+    <div class="card">
+      <h2>📥 Resposta</h2>
+      <pre id="response">A resposta aparecerá aqui...</pre>
+    </div>
+    
+  </div>
+  
+  <script>
+    async function sendRequest() {
+      const method = document.getElementById("method").value;
+      const url = document.getElementById("url").value.trim();
+      const body = document.getElementById("body").value.trim();
+      const responseBox = document.getElementById("response");
+      
+      // ✅ Validação: não enviar se tudo estiver vazio
+      if (!url && !body) {
+        responseBox.textContent = "Erro: Preencha pelo menos a URL ou o Body!";
+        return; // sai da função
+      }
+      
+      // ✅ Validar URL
+      if (!url) {
+        responseBox.textContent = "Erro: Digite uma URL válida!";
+        return;
+      }
+      
+      const options = {
+        method,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      };
+      
+      // ✅ Adicionar Body só se método não for GET
+      if (method !== "GET" && body) {
+        try {
+          options.body = JSON.stringify(JSON.parse(body)); // valida JSON
+        } catch (err) {
+          responseBox.textContent = "Erro: Body não é um JSON válido!";
+          return;
+        }
+      }
+      
+      try {
+        responseBox.textContent = "Carregando...";
+        
+        const res = await fetch(url, options);
+        const contentType = res.headers.get("content-type");
+        let data;
+        
+        if (contentType && contentType.includes("application/json")) {
+          data = await res.json();
+          responseBox.textContent =
+            `Status: ${res.status}\n\n` +
+            JSON.stringify(data, null, 2);
+        } else {
+          data = await res.text();
+          responseBox.textContent =
+            `Status: ${res.status}\n\n` +
+            data;
+        }
+        
+      } catch (error) {
+        responseBox.textContent = "Erro: " + error.message;
+      }
+    }
+    
+    
+  </script>
+  
+</body>
+
+</html>
