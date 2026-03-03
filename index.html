@@ -128,6 +128,9 @@
       <label class="pl">Body (JSON)</label>
       <textarea id="body" placeholder='{"name":"Sr MG"}'></textarea>
       
+      <label class="pl">Headers (JSON)</label>
+<textarea id="headers" placeholder='{"Authorization":"Bearer 123"}'></textarea>
+      
       <button onclick="sendRequest()">Enviar Requisição</button>
     </div>
     
@@ -139,67 +142,71 @@
   </div>
   
   <script>
-    async function sendRequest() {
-      const method = document.getElementById("method").value;
-      const url = document.getElementById("url").value.trim();
-      const body = document.getElementById("body").value.trim();
-      const responseBox = document.getElementById("response");
-      
-      // ✅ Validação: não enviar se tudo estiver vazio
-      if (!url && !body) {
-        responseBox.textContent = "Erro: Preencha pelo menos a URL ou o Body!";
-        return; // sai da função
-      }
-      
-      // ✅ Validar URL
-      if (!url) {
-        responseBox.textContent = "Erro: Digite uma URL válida!";
-        return;
-      }
-      
-      const options = {
-        method,
-        headers: {
-          "Content-Type": "application/json"
-        }
-      };
-      
-      // ✅ Adicionar Body só se método não for GET
-      if (method !== "GET" && body) {
-        try {
-          options.body = JSON.stringify(JSON.parse(body)); // valida JSON
-        } catch (err) {
-          responseBox.textContent = "Erro: Body não é um JSON válido!";
-          return;
-        }
-      }
-      
-      try {
-        responseBox.textContent = "Carregando...";
-        
-        const res = await fetch(url, options);
-        const contentType = res.headers.get("content-type");
-        let data;
-        
-        if (contentType && contentType.includes("application/json")) {
-          data = await res.json();
-          responseBox.textContent =
-            `Status: ${res.status}\n\n` +
-            JSON.stringify(data, null, 2);
-            
-        } else {
-          data = await res.text();
-          responseBox.textContent =
-            `Status: ${res.status}\n\n` +
-            data;
-        }
-        
-      } catch (error) {
-        responseBox.textContent = "Erro: " + error.message;
-      }
+   async function sendRequest() {
+  const method = document.getElementById("method").value;
+  const url = document.getElementById("url").value.trim();
+  const body = document.getElementById("body").value.trim();
+  const headersInput = document.getElementById("headers").value.trim();
+  const responseBox = document.getElementById("response");
+  
+  if (!url) {
+    responseBox.textContent = "Erro: Digite uma URL válida!";
+    return;
+  }
+  
+  let customHeaders = {};
+  
+  // ✅ Validar headers JSON
+  if (headersInput) {
+    try {
+      customHeaders = JSON.parse(headersInput);
+    } catch (err) {
+      responseBox.textContent = "Erro: Headers não são JSON válido!";
+      return;
+    }
+  }
+  
+  const options = {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      ...customHeaders
+    }
+  };
+  
+  // ✅ Body apenas se não for GET
+  if (method !== "GET" && body) {
+    try {
+      options.body = JSON.stringify(JSON.parse(body));
+    } catch (err) {
+      responseBox.textContent = "Erro: Body não é um JSON válido!";
+      return;
+    }
+  }
+  
+  try {
+    responseBox.textContent = "Carregando...";
+    
+    const res = await fetch(url, options);
+    const contentType = res.headers.get("content-type");
+    let data;
+    
+    if (contentType && contentType.includes("application/json")) {
+      data = await res.json();
+      responseBox.textContent =
+        `Status: ${res.status}\n\n` +
+        JSON.stringify(data, null, 2);
+    } else {
+      data = await res.text();
+      responseBox.textContent =
+        `Status: ${res.status}\n\n` +
+        data;
     }
     
-    
+  } catch (error) {
+    responseBox.textContent = "Erro: " + error.message;
+  }
+}
   </script>
   
 </body>
