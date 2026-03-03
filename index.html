@@ -4,15 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mini Postman - Sr MG</title>
+  <title>linkWa-mg Object Request </title>
   
   <style>
-    :root {
-      --primary: #0C9A3E;
-      --background: #FFFFFF;
-      --card: #ABABAB;
-      --border: #e2e8f0;
-    }
+   :root {
+  --primary: #16A34A;
+  --background: #F8FAFC;
+  --card: #4D4D4D;
+  --border: #E2E8F0;
+}
     
     * {
       box-sizing: border-box;
@@ -28,7 +28,7 @@
     /* MOBILE FIRST */
     .container {
       display: flex;
-      flex-direction: column;
+      flex-flow: column nowrap;
       gap: 20px;
     }
     
@@ -37,6 +37,7 @@
       padding: 15px;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      
     }
     
     h2 {
@@ -53,14 +54,14 @@
       margin-top: 8px;
       border-radius: 6px;
       border: 1px solid var(--border);
-      outline: 1px solid #0C9A3E;
+      outline: none;
       font-size: 14px;
     }
     
     textarea {
       min-height: 100px;
       resize: vertical;
-      outline: 1px solid #0C9A3E;
+      outline: none;
     }
     button {
       background: var(--primary);
@@ -82,13 +83,8 @@
       padding: 15px;
       border-radius: 8px;
       overflow-y: auto;
-      /* scroll vertical */
-      max-height: 400px;
-      /* limite de altura */
       white-space: pre-wrap;
-      /* quebra linha automática */
       word-wrap: break-word;
-      /* evita estouro de palavras grandes */
     }
     
     
@@ -100,7 +96,13 @@
       
       .card {
         flex: 1;
+        max-width: 100vh;
       }
+    }
+    
+    .pl{
+      color: #fff;
+      font-weight: 500;
     }
   </style>
 </head>
@@ -112,7 +114,7 @@
     <div class="card">
       <h2>📡 Requisição</h2>
       
-      <label>Método</label>
+      <label class="pl">Método</label>
       <select id="method">
         <option value="GET">GET</option>
         <option value="POST">POST</option>
@@ -120,10 +122,10 @@
         <option value="DELETE">DELETE</option>
       </select>
       
-      <label>URL</label>
+      <label class="pl">URL</label>
       <input type="text" id="url" placeholder="http://192.168.0.15:3000/api">
       
-      <label>Body (JSON)</label>
+      <label class="pl">Body (JSON)</label>
       <textarea id="body" placeholder='{"name":"Sr MG"}'></textarea>
       
       <button onclick="sendRequest()">Enviar Requisição</button>
@@ -184,6 +186,7 @@
           responseBox.textContent =
             `Status: ${res.status}\n\n` +
             JSON.stringify(data, null, 2);
+            
         } else {
           data = await res.text();
           responseBox.textContent =
