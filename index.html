@@ -2,306 +2,76 @@
 <html lang="pt">
 
 <head>
-  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>linkWa-mg Object Request</title>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   
-  <style>
-    :root {
-      --primary: #0FCAD1;
-      --background: #676767;
-      --card: #00000045;
-      --border: #03D8FF;
-    }
-    
-    * {
-      box-sizing: border-box;
-    }
-    
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--background);
-      padding: 15px;
-    }
-    
-    .container {
-      display: flex;
-      flex-flow: column nowrap;
-      gap: 20px;
-    }
-    
-    .card {
-      background: var(--card);
-      padding: 15px;
-      border-radius: 10px;
-    }
-    
-    h2 {
-      margin-top: 0;
-      color: var(--primary);
-    }
-    
-    input,
-    select,
-    textarea,
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      font-size: 14px;
-      outline: none;
-    }
-    
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-    
-    button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    
-    button:hover {
-      opacity: .9;
-    }
-    
-    pre {
-      background: #091125;
-      padding: 15px;
-      border-radius: 8px;
-      overflow: auto;
-      font-size: 15px;
-      line-height: 1.5;
-      font-size: 15px;
-      color: white;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    
-    .pl {
-      color: white;
-      font-weight: 500;
-    }
-    
-    @media(min-width:768px) {
-      
-      .container {
-        flex-direction: row;
-      }
-      
-      .card {
-        flex: 1;
-        max-width: 100vh;
-      }
-      
-    }
-    
-    /* fundo do código */
-    .hljs {
-      background: #091125;
-      color: #ffffff;
-    }
-    
-    /* chaves {} [] */
-    .hljs-punctuation {
-      color: #00E5FF;
-    }
-    
-    
-    /* nomes das propriedades */
-    .hljs-attr {
-      color: #f4f4f4;
-      font-weight: bold;
-    }
-    
-    /* strings */
-    .hljs-string {
-      color: #01E400;
-      font-weight: bolder;
-    }
-    
-    /* números */
-    .hljs-number {
-      color: #FFB300;
-      font-weight: bolder;
-    }
-    
-    /* boolean */
-    .hljs-literal {
-      color: #E1042C;
-      font-weight: bolder;
-    }
-    
-    /* null */
-    .hljs-keyword {
-      color: #FF1313;
-      font-weight: bold;
-    }
-  </style>
   
+  <title>LinkWA MG - API Tester</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   
-  <div class="container">
+  <div class="app">
     
-    <div class="card">
+    <aside class="sidebar">
       
-      <h2>📡 Requisição</h2>
+      <h3>Requests</h3>
       
-      <label class="pl">Método</label>
+      <button onclick="novaRequest()">+ Nova</button>
       
-      <select id="method">
-        <option>GET</option>
-        <option>POST</option>
-        <option>PUT</option>
-        <option>DELETE</option>
-      </select>
+      <ul id="history"></ul>
       
-      <label class="pl">URL</label>
+    </aside>
+    <main class="workspace">
+      <h2 style="text-align: center;">LinkWa_mg test Request </h2>
       
-      <input id="url" placeholder="http://localhost:3000/api">
+      <section class="request">
+        
+        <div class="topbar">
+          
+          <select id="method">
+            <option>GET</option>
+            <option>POST</option>
+            <option>PUT</option>
+            <option>PATCH</option>
+            <option>DELETE</option>
+          </select>
+          
+          <input id="url" placeholder="https://api.exemplo.com">
+          
+          <button onclick="sendRequest()">Enviar</button>
+          
+        </div>
+        
+        <textarea id="body" placeholder='{"nome":"MG"}'></textarea>
+        
+        <textarea id="headers" placeholder='{"Authorization":"Bearer token"}'></textarea>
+        
+      </section>
       
-      <label class="pl">Body (JSON)</label>
+      <section class="response">
+        
+        <div class="response-info">
+          <span id="status"></span>
+          <span id="time"></span>
+        </div>
+        
+        <pre id="response">Resposta aparecerá aqui...</pre>
+        
+      </section>
       
-      <textarea id="body" placeholder='{"name":"Sr MG"}'></textarea>
-      
-      <label class="pl">Headers (JSON)</label>
-      
-      <textarea id="headers" placeholder='{"Authorization":"Bearer token"}'></textarea>
-      
-      <button onclick="sendRequest()">Enviar Requisição</button>
-      
-    </div>
-    
-    <div class="card">
-      
-      <h2>📥 Resposta</h2>
-      
-      <pre>
-<code id="response">A resposta aparecerá aqui...</code>
-</pre>
-      
-    </div>
+    </main>
     
   </div>
   
-  <script>
-    async function sendRequest() {
-      
-      const method = document.getElementById("method").value
-      const url = document.getElementById("url").value.trim()
-      const body = document.getElementById("body").value.trim()
-      const headersInput = document.getElementById("headers").value.trim()
-      
-      const responseBox = document.getElementById("response")
-      
-      if (!url) {
-        return responseBox.innerHTML = "Erro: URL inválida"
-        responseBox.classList.add("red")
-      }
-      
-      let customHeaders = {}
-      
-      if (headersInput) {
-        
-        try {
-          
-          customHeaders = JSON.parse(headersInput)
-          
-        } catch {
-          
-          return responseBox.innerHTML = "Erro: Headers não são JSON válido"
-          
-          
-        }
-        
-      }
-      
-      const headers = { ...customHeaders }
-      
-      if (method !== "GET") {
-        headers["Content-Type"] = "application/json"
-      }
-      
-      const options = {
-        method,
-        headers
-      }
-      
-      if (method !== "GET" && body) {
-        
-        try {
-          
-          options.body = JSON.stringify(JSON.parse(body))
-          
-        } catch {
-          
-          return responseBox.innerHTML = "Erro: Body não é JSON válido"
-          
-        }
-        
-      }
-      
-      try {
-        
-        responseBox.textContent = "Carregando..."
-        
-        const start = performance.now()
-        
-        const res = await fetch(url, options)
-        
-        const end = performance.now()
-        
-        const time = (end - start).toFixed(2)
-        
-        const type = res.headers.get("content-type")
-        
-        let data
-        
-        if (type && type.includes("application/json")) {
-          
-          data = await res.json()
-          
-        } else {
-          
-          data = await res.text()
-          
-        }
-        
-        const result = {
-          
-          status: res.status,
-          ok: res.ok,
-          time_ms: time,
-          data: data
-          
-        }
-        
-        const formatted = JSON.stringify(result, null, 2)
-        
-        responseBox.innerHTML = hljs.highlight(formatted, { language: "json" }).value
-        
-      } catch (error) {
-        
-        responseBox.innerHTML = error.message
-        
-      }
-      
-    }
+  
+  <script src="app.js">
+    
   </script>
   
 </body>
