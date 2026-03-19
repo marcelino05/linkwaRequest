@@ -173,7 +173,7 @@ textarea,
 select {
   background: #020617;
   color: #E2E8F0;
-  font-size: 1em;
+  font-size: 1.1em;
 }
 
 /* MOBILE */
@@ -191,6 +191,9 @@ select {
   .topbar {
     flex-direction: column;
   }
+  textarea, input, select{
+    font-size: .90em;
+  }
   
 }
 
@@ -207,33 +210,30 @@ select {
 
 /* nomes das propriedades */
 .hljs-attr {
-  color: #02B14E;
+  color: #54FC9D;
   font-weight: 500;
 }
 
 /* strings */
 .hljs-string {
   color: #f4f4f4;
-  font-weight: 400;
 }
 
 /* números */
 .hljs-number {
   color: #FFB300;
-  font-weight: 500;
 }
 
 /* boolean */
 .hljs-literal {
-  color: #E1042C;
+  color: #EF0F38;
   font-weight: 500;
   
 }
 
 /* null */
 .hljs-keyword {
-  color: #FF1313;
-  font-weight: 500;
+  color: #FF3838;
 }
 
 .bord {
