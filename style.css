@@ -164,7 +164,7 @@
       overflow: auto;
       word-break: break-all;
       color: #E2E8F0;
-      
+      overflow-wrap: break-word;
     }
     
     input,
